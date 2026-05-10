@@ -299,7 +299,31 @@ def invoice(trip_id):
                          tax=tax,
                          discount=discount,
                          grand_total=grand_total) 
-        
+@app.route('/activity_search')
+def activity_search():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    query = request.args.get('q', '').lower()
+    filter_type = request.args.get('type', 'all')
+    activities = [
+        {'name': 'Eiffel Tower Visit', 'city': 'Paris', 'type': 'sightseeing', 'cost': '₹2,000', 'duration': '3 hours', 'emoji': '🗼'},
+        {'name': 'Sushi Making Class', 'city': 'Tokyo', 'type': 'food', 'cost': '₹3,500', 'duration': '2 hours', 'emoji': '🍣'},
+        {'name': 'Bali Surfing', 'city': 'Bali', 'type': 'adventure', 'cost': '₹1,500', 'duration': '4 hours', 'emoji': '🏄'},
+        {'name': 'Louvre Museum', 'city': 'Paris', 'type': 'sightseeing', 'cost': '₹1,800', 'duration': '4 hours', 'emoji': '🏛️'},
+        {'name': 'Dubai Desert Safari', 'city': 'Dubai', 'type': 'adventure', 'cost': '₹4,000', 'duration': '6 hours', 'emoji': '🐪'},
+        {'name': 'Singapore Food Tour', 'city': 'Singapore', 'type': 'food', 'cost': '₹2,500', 'duration': '3 hours', 'emoji': '🍜'},
+        {'name': 'Tokyo Disneyland', 'city': 'Tokyo', 'type': 'entertainment', 'cost': '₹5,000', 'duration': '8 hours', 'emoji': '🎡'},
+        {'name': 'Goa Beach Party', 'city': 'Goa', 'type': 'entertainment', 'cost': '₹1,000', 'duration': '5 hours', 'emoji': '🏖️'},
+        {'name': 'Rome Colosseum Tour', 'city': 'Rome', 'type': 'sightseeing', 'cost': '₹2,200', 'duration': '3 hours', 'emoji': '🏟️'},
+        {'name': 'Bangkok Temple Tour', 'city': 'Bangkok', 'type': 'sightseeing', 'cost': '₹1,200', 'duration': '4 hours', 'emoji': '🛕'},
+        {'name': 'Manali Trek', 'city': 'Manali', 'type': 'adventure', 'cost': '₹2,000', 'duration': '6 hours', 'emoji': '🏔️'},
+        {'name': 'London Eye', 'city': 'London', 'type': 'entertainment', 'cost': '₹3,000', 'duration': '2 hours', 'emoji': '🎡'},
+    ]
+    if query:
+        activities = [a for a in activities if query in a['name'].lower() or query in a['city'].lower()]
+    if filter_type != 'all':
+        activities = [a for a in activities if a['type'] == filter_type]
+    return render_template('activity_search.html', activities=activities, query=query, filter_type=filter_type)        
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
