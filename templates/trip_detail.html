@@ -18,6 +18,8 @@
             justify-content: space-between;
             align-items: center;
             color: white;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .navbar .logo { font-size: 24px; font-weight: bold; }
         .navbar a {
@@ -26,6 +28,7 @@
             background: rgba(255,255,255,0.2);
             padding: 8px 15px;
             border-radius: 20px;
+            font-size: 13px;
         }
         .hero {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -64,7 +67,7 @@
             font-size: 13px;
             outline: none;
         }
-        input:focus { border-color: #667eea; }
+        input:focus, select:focus { border-color: #667eea; }
         button {
             width: 100%;
             padding: 10px;
@@ -113,8 +116,15 @@
             flex-shrink: 0;
         }
         .packed { background: #667eea; color: white; }
-        .item-text { color: #333; font-size: 14px; }
+        .item-text { color: #333; font-size: 14px; flex: 1; }
         .item-text.done { text-decoration: line-through; color: #aaa; }
+        .category-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #f0f0ff;
+            color: #667eea;
+        }
         .budget-card {
             background: white;
             border-radius: 15px;
@@ -139,6 +149,29 @@
         }
         .budget-total .amount { font-size: 36px; font-weight: bold; }
         .budget-total .label { opacity: 0.9; font-size: 14px; }
+        .progress-bar {
+            background: #ddd;
+            border-radius: 5px;
+            height: 8px;
+            margin-bottom: 15px;
+        }
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 8px;
+            border-radius: 5px;
+        }
+        .reset-btn {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            background: #ff4757;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
         .empty-state {
             text-align: center;
             padding: 20px;
@@ -150,44 +183,47 @@
 <body>
     <div class="navbar">
         <div class="logo">✈️ Traveloop</div>
-        <a href="/dashboard">← Back</a>
-<a href="/notes/{{ trip[0] }}">📝 Notes</a>
-<a href="/share/{{ trip[0] }}">🔗 Share</a>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="/dashboard">← Back</a>
+            <a href="/notes/{{ trip[0] }}">📝 Notes</a>
+            <a href="/share/{{ trip[0] }}">🔗 Share</a>
+        </div>
     </div>
     <div class="hero">
         <h1>{{ trip[2] }} 🗺️</h1>
         <p>📅 {{ trip[3] }} → {{ trip[4] }}</p>
     </div>
     <div class="container">
+        <!-- Budget Summary -->
         <div class="budget-card">
             <h3>💰 Trip Budget</h3>
             <div class="budget-total">
-    <div class="amount">₹{{ itinerary|sum(attribute=5)|round(2) }}</div>
-    <div class="label">Total Estimated Cost</div>
-</div>
-<canvas id="budgetChart" width="300" height="300" style="margin: 20px auto; display: block;"></canvas>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script>
-    var ctx = document.getElementById('budgetChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: [{% for item in itinerary %}'{{ item[3] }}'{% if not loop.last %},{% endif %}{% endfor %}],
-            datasets: [{
-                data: [{% for item in itinerary %}{{ item[5] }}{% if not loop.last %},{% endif %}{% endfor %}],
-                backgroundColor: ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#38f9d7'],
-            }]
-        },
-        options: {
-            responsive: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-</script>
+                <div class="amount">₹{{ itinerary|sum(attribute=5)|round(2) }}</div>
+                <div class="label">Total Estimated Cost</div>
+            </div>
+            <canvas id="budgetChart" width="300" height="300" style="margin: 20px auto; display: block;"></canvas>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+            <script>
+                var ctx = document.getElementById('budgetChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [{% for item in itinerary %}'{{ item[3] }}'{% if not loop.last %},{% endif %}{% endfor %}],
+                        datasets: [{
+                            data: [{% for item in itinerary %}{{ item[5] }}{% if not loop.last %},{% endif %}{% endfor %}],
+                            backgroundColor: ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#38f9d7'],
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            </script>
         </div>
+
         <div class="grid">
+            <!-- Itinerary Section -->
             <div class="card">
                 <h3>🗓️ Itinerary Builder</h3>
                 <form method="POST" action="/add_itinerary/{{ trip[0] }}">
@@ -212,12 +248,33 @@
                     <div class="empty-state">No itinerary yet! Add your first stop above.</div>
                 {% endif %}
             </div>
+
+            <!-- Packing Checklist -->
             <div class="card">
                 <h3>🧳 Packing Checklist</h3>
+                {% if packing %}
+                <div style="background:#f0f0ff; border-radius:10px; padding:10px; margin-bottom:15px;">
+                    <div style="color:#667eea; font-size:13px; margin-bottom:5px;">
+                        Progress: {{ packing|length }} items total
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:{{ ((packing|selectattr(3)|list|length / packing|length) * 100)|int if packing|length > 0 else 0 }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
                 <form method="POST" action="/add_packing/{{ trip[0] }}">
                     <input type="text" name="item" placeholder="Add item (e.g. Passport)" required>
+                    <select name="category">
+                        <option value="documents">📄 Documents</option>
+                        <option value="clothing">👕 Clothing</option>
+                        <option value="electronics">📱 Electronics</option>
+                        <option value="other">📦 Other</option>
+                    </select>
                     <button type="submit">+ Add Item</button>
                 </form>
+                <a href="/reset_packing/{{ trip[0] }}" 
+                    onclick="return confirm('Reset all items?')"
+                    class="reset-btn">🔄 Reset All</a>
                 <br>
                 {% if packing %}
                     {% for item in packing %}
@@ -228,6 +285,9 @@
                             </div>
                         </a>
                         <span class="item-text {% if item[3] %}done{% endif %}">{{ item[2] }}</span>
+                        {% if item|length > 4 %}
+                        <span class="category-badge">{{ item[4] }}</span>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 {% else %}

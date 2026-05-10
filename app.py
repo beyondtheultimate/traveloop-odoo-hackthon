@@ -65,7 +65,9 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        name = request.form['name']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        name = first_name + ' ' + last_name
         email = request.form['email']
         password = request.form['password']
         conn = sqlite3.connect('traveloop.db')
@@ -262,7 +264,16 @@ def share_trip(trip_id):
     itinerary = c.fetchall()
     conn.close()
     return render_template('share.html', trip=trip, itinerary=itinerary)
- 
+@app.route('/reset_packing/<int:trip_id>')
+def reset_packing(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM packing WHERE trip_id=?", (trip_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('trip_detail', trip_id=trip_id)) 
  
         
 if __name__ == '__main__':
