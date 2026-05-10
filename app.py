@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'traveloop123'
@@ -206,6 +208,53 @@ def delete_note(note_id, trip_id):
     conn.commit()
     conn.close()
     return redirect(url_for('notes', trip_id=trip_id))
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        photo = request.files.get('photo')
+        if photo and photo.filename != '':
+            filename = secure_filename(photo.filename)
+            photo.save(os.path.join('static', filename))
+            session['photo'] = filename
+        c.execute("UPDATE users SET name=?, email=? WHERE id=?",
+                 (name, email, session['user_id']))
+        conn.commit()
+        session['user_name'] = name
+    c.execute("SELECT * FROM users WHERE id=?", (session['user_id'],))
+    user = c.fetchone()
+    conn.close()
+    return render_template('profile.html', user=user, photo=session.get('photo'))
+@app.route('/city_search')
+def city_search():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    query = request.args.get('q', '').lower()
+    cities = [
+        {'name': 'Paris', 'country': 'France', 'cost': '₹80,000', 'popularity': '⭐⭐⭐⭐⭐', 'emoji': '🗼'},
+        {'name': 'Tokyo', 'country': 'Japan', 'cost': '₹95,000', 'popularity': '⭐⭐⭐⭐⭐', 'emoji': '🏯'},
+        {'name': 'New York', 'country': 'USA', 'cost': '₹1,20,000', 'popularity': '⭐⭐⭐⭐⭐', 'emoji': '🗽'},
+        {'name': 'Bali', 'country': 'Indonesia', 'cost': '₹45,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🏝️'},
+        {'name': 'London', 'country': 'UK', 'cost': '₹1,10,000', 'popularity': '⭐⭐⭐⭐⭐', 'emoji': '🎡'},
+        {'name': 'Dubai', 'country': 'UAE', 'cost': '₹70,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🏙️'},
+        {'name': 'Singapore', 'country': 'Singapore', 'cost': '₹85,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🦁'},
+        {'name': 'Rome', 'country': 'Italy', 'cost': '₹75,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🏛️'},
+        {'name': 'Bangkok', 'country': 'Thailand', 'cost': '₹35,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🛕'},
+        {'name': 'Sydney', 'country': 'Australia', 'cost': '₹1,00,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🦘'},
+        {'name': 'Goa', 'country': 'India', 'cost': '₹15,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🏖️'},
+        {'name': 'Manali', 'country': 'India', 'cost': '₹12,000', 'popularity': '⭐⭐⭐⭐', 'emoji': '🏔️'},
+    ]
+    if query:
+        cities = [c for c in cities if query in c['name'].lower() or query in c['country'].lower()]
+    return render_template('city_search.html', cities=cities, query=query)
+ 
+ 
+        
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)

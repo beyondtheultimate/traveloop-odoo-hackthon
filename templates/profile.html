@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop - Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 15px;
+        }
+        .hero h1 { font-size: 24px; margin-bottom: 5px; }
+        .hero p { opacity: 0.9; font-size: 14px; }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0ff;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, select:focus { border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        button:hover { opacity: 0.9; }
+        .delete-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .delete-btn:hover { opacity: 0.9; }
+        .success {
+            background: #e0ffe0;
+            color: #0a0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .dest-item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">✈️ Traveloop</div>
+        <a href="/dashboard">← Dashboard</a>
+    </div>
+    <div class="hero">
+        
+        <div class="avatar">
+    {% if photo %}
+    <img src="/static/{{ photo }}" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
+    {% else %}
+    👤
+    {% endif %}
+</div>
+    <div class="container">
+        <!-- Edit Profile -->
+        <div class="card">
+            <h3>✏️ Edit Profile</h3>
+            <form method="POST" enctype="multipart/form-data">
+                <label>Full Name</label>
+                <input type="text" name="name" value="{{ user[1] }}" required>
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ user[2] }}" required>
+                <label>Profile Photo</label>
+                <input type="file" name="photo" accept="image/*">
+                <label>Language Preference</label>
+                <select name="language">
+                    <option value="english">🇬🇧 English</option>
+                    <option value="hindi">🇮🇳 Hindi</option>
+                    <option value="spanish">🇪🇸 Spanish</option>
+                    <option value="french">🇫🇷 French</option>
+                    <option value="japanese">🇯🇵 Japanese</option>
+                </select>
+                <button type="submit">Save Changes ✅</button>
+            </form>
+        </div>
+
+        <!-- Saved Destinations -->
+        <div class="card">
+            <h3>🌍 Saved Destinations</h3>
+            <div class="dest-item">🗼 Paris, France</div>
+            <div class="dest-item">🏯 Tokyo, Japan</div>
+            <div class="dest-item">🏝️ Bali, Indonesia</div>
+        </div>
+
+        <!-- Delete Account -->
+        <div class="card">
+            <h3>⚠️ Danger Zone</h3>
+            <a href="/logout" onclick="return confirm('Are you sure you want to delete your account?')">
+                <button class="delete-btn">🗑️ Delete Account</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

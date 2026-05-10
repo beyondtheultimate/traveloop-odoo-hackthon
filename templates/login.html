@@ -43,6 +43,7 @@
             outline: none;
         }
         input:focus { border-color: #667eea; }
+        input.error-field { border-color: #ff4757; }
         button {
             width: 100%;
             padding: 12px;
@@ -62,6 +63,14 @@
             border-radius: 8px;
             margin-bottom: 15px;
             text-align: center;
+            font-size: 13px;
+        }
+        .field-error {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            display: none;
         }
         .link {
             text-align: center;
@@ -69,6 +78,12 @@
             color: #888;
         }
         .link a { color: #667eea; text-decoration: none; font-weight: bold; }
+        .forgot {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        .forgot a { color: #667eea; font-size: 13px; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -78,11 +93,13 @@
         {% if error %}
         <div class="error">{{ error }}</div>
         {% endif %}
-        <form method="POST">
-            <input type="email" name="email" placeholder="Email Address" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
-                <a href="#" style="color: #667eea; font-size: 13px; text-decoration: none;">Forgot Password?</a>
+        <form method="POST" onsubmit="return validateForm()">
+            <input type="email" name="email" id="email" placeholder="Email Address" required>
+            <div class="field-error" id="email-error">Please enter a valid email!</div>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <div class="field-error" id="password-error">Password cannot be empty!</div>
+            <div class="forgot">
+                <a href="#">Forgot Password?</a>
             </div>
             <button type="submit">Login</button>
         </form>
@@ -90,5 +107,36 @@
             Don't have an account? <a href="/signup">Sign Up</a>
         </div>
     </div>
+    <script>
+        function validateForm() {
+            let valid = true;
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+
+            // Reset errors
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+            email.classList.remove('error-field');
+            password.classList.remove('error-field');
+
+            // Validate email
+            if (!email.value.includes('@')) {
+                emailError.style.display = 'block';
+                email.classList.add('error-field');
+                valid = false;
+            }
+
+            // Validate password
+            if (password.value.length < 1) {
+                passwordError.style.display = 'block';
+                password.classList.add('error-field');
+                valid = false;
+            }
+
+            return valid;
+        }
+    </script>
 </body>
 </html>

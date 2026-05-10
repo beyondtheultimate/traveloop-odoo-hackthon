@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop - City Search</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 10px; }
+        .hero p { opacity: 0.9; margin-bottom: 20px; }
+        .search-bar {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            gap: 10px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-bar button {
+            padding: 12px 25px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .container { padding: 30px; max-width: 1000px; margin: 0 auto; }
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .city-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .city-card:hover { transform: translateY(-5px); }
+        .city-emoji { font-size: 40px; margin-bottom: 10px; }
+        .city-name { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .city-country { color: #888; font-size: 13px; margin-bottom: 10px; }
+        .city-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .city-cost {
+            background: #f0f0ff;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .city-popularity { font-size: 12px; }
+        .add-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .add-btn:hover { opacity: 0.9; }
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+        .no-results h3 { font-size: 20px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">✈️ Traveloop</div>
+        <a href="/dashboard">← Dashboard</a>
+    </div>
+    <div class="hero">
+        <h1>🌍 Explore Cities</h1>
+        <p>Discover amazing destinations for your next trip!</p>
+        <form method="GET" action="/city_search">
+            <div class="search-bar">
+                <input type="text" name="q" placeholder="Search cities or countries..." value="{{ query }}">
+                <button type="submit">Search 🔍</button>
+            </div>
+        </form>
+    </div>
+    <div class="container">
+        <div class="section-title">
+            {% if query %}
+            Search results for "{{ query }}" ({{ cities|length }} found)
+            {% else %}
+            🔥 Popular Destinations
+            {% endif %}
+        </div>
+        {% if cities %}
+        <div class="cities-grid">
+            {% for city in cities %}
+            <div class="city-card">
+                <div class="city-emoji">{{ city.emoji }}</div>
+                <div class="city-name">{{ city.name }}</div>
+                <div class="city-country">📍 {{ city.country }}</div>
+                <div class="city-info">
+                    <span class="city-cost">💰 {{ city.cost }}</span>
+                    <span class="city-popularity">{{ city.popularity }}</span>
+                </div>
+                <a href="/dashboard" class="add-btn">+ Add to Trip</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <h3>No cities found! 😕</h3>
+            <p>Try searching for a different city or country!</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
