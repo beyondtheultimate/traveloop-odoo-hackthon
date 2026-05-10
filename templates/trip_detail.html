@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop - Trip Detail</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 10px; }
+        .hero p { opacity: 0.9; }
+        .container { padding: 30px; max-width: 1000px; margin: 0 auto; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0ff;
+            padding-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+        }
+        input:focus { border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { opacity: 0.9; }
+        .item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item .info { flex: 1; }
+        .item .city { font-weight: bold; color: #333; font-size: 14px; }
+        .item .details { color: #888; font-size: 12px; margin-top: 3px; }
+        .cost { color: #667eea; font-weight: bold; font-size: 13px; }
+        .packing-item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .packing-item a { text-decoration: none; }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .packed { background: #667eea; color: white; }
+        .item-text { color: #333; font-size: 14px; }
+        .item-text.done { text-decoration: line-through; color: #aaa; }
+        .budget-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .budget-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0ff;
+            padding-bottom: 10px;
+        }
+        .budget-total {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .budget-total .amount { font-size: 36px; font-weight: bold; }
+        .budget-total .label { opacity: 0.9; font-size: 14px; }
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">✈️ Traveloop</div>
+        <a href="/dashboard">← Back</a>
+    </div>
+    <div class="hero">
+        <h1>{{ trip[2] }} 🗺️</h1>
+        <p>📅 {{ trip[3] }} → {{ trip[4] }}</p>
+    </div>
+    <div class="container">
+        <div class="budget-card">
+            <h3>💰 Trip Budget</h3>
+            <div class="budget-total">
+    <div class="amount">₹{{ itinerary|sum(attribute=5)|round(2) }}</div>
+    <div class="label">Total Estimated Cost</div>
+</div>
+<canvas id="budgetChart" width="300" height="300" style="margin: 20px auto; display: block;"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+    var ctx = document.getElementById('budgetChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for item in itinerary %}'{{ item[3] }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for item in itinerary %}{{ item[5] }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#38f9d7'],
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>🗓️ Itinerary Builder</h3>
+                <form method="POST" action="/add_itinerary/{{ trip[0] }}">
+                    <input type="text" name="city" placeholder="City (e.g. Paris)" required>
+                    <input type="text" name="activity" placeholder="Activity (e.g. Eiffel Tower)" required>
+                    <input type="date" name="day" required>
+                    <input type="number" name="cost" placeholder="Estimated Cost (₹)" required>
+                    <button type="submit">+ Add to Itinerary</button>
+                </form>
+                <br>
+                {% if itinerary %}
+                    {% for item in itinerary %}
+                    <div class="item">
+                        <div class="info">
+                            <div class="city">🏙️ {{ item[2] }}</div>
+                            <div class="details">📌 {{ item[3] }} | 📅 {{ item[4] }}</div>
+                        </div>
+                        <div class="cost">₹{{ item[5] }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No itinerary yet! Add your first stop above.</div>
+                {% endif %}
+            </div>
+            <div class="card">
+                <h3>🧳 Packing Checklist</h3>
+                <form method="POST" action="/add_packing/{{ trip[0] }}">
+                    <input type="text" name="item" placeholder="Add item (e.g. Passport)" required>
+                    <button type="submit">+ Add Item</button>
+                </form>
+                <br>
+                {% if packing %}
+                    {% for item in packing %}
+                    <div class="packing-item">
+                        <a href="/toggle_packing/{{ item[0] }}/{{ trip[0] }}">
+                            <div class="checkbox {% if item[3] %}packed{% endif %}">
+                                {% if item[3] %}✓{% endif %}
+                            </div>
+                        </a>
+                        <span class="item-text {% if item[3] %}done{% endif %}">{{ item[2] }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No items yet! Add packing items above.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

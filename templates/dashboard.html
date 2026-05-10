@@ -65,13 +65,6 @@
         .trip-card h3 { color: #333; margin-bottom: 8px; font-size: 18px; }
         .trip-card .dates { color: #888; font-size: 13px; margin-bottom: 10px; }
         .trip-card .desc { color: #555; font-size: 14px; margin-bottom: 15px; }
-        .trip-card .tag {
-            background: #f0f0ff;
-            color: #667eea;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
         .empty {
             text-align: center;
             padding: 60px;
@@ -91,6 +84,29 @@
         <a href="/create_trip" class="btn-new">+ Plan New Trip</a>
     </div>
     <div class="container">
+        <div class="section-title">🌍 Popular Destinations</div>
+        <div class="trips-grid" style="margin-bottom: 30px;">
+            <div class="trip-card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                <h3 style="color: white;">🗼 Paris, France</h3>
+                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">City of Love & Lights</div>
+                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹80,000</div>
+            </div>
+            <div class="trip-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;">
+                <h3 style="color: white;">🗽 New York, USA</h3>
+                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">The City That Never Sleeps</div>
+                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹1,20,000</div>
+            </div>
+            <div class="trip-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white;">
+                <h3 style="color: white;">🏯 Tokyo, Japan</h3>
+                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">Modern Meets Traditional</div>
+                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹95,000</div>
+            </div>
+            <div class="trip-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white;">
+                <h3 style="color: white;">🏝️ Bali, Indonesia</h3>
+                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">Island of Gods</div>
+                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹45,000</div>
+            </div>
+        </div>
         <div class="section-title">My Trips</div>
         {% if trips %}
         <div class="trips-grid">
@@ -99,7 +115,30 @@
                 <h3>{{ trip[2] }}</h3>
                 <div class="dates">📅 {{ trip[3] }} → {{ trip[4] }}</div>
                 <div class="desc">{{ trip[5] }}</div>
-                <span class="tag">✈️ Trip</span>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <a href="/trip/{{ trip[0] }}" style="
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        text-decoration: none;
+                        font-size: 13px;
+                        font-weight: bold;
+                        display: inline-block;
+                    ">View →</a>
+                    <a href="/delete_trip/{{ trip[0] }}" 
+                        onclick="return confirm('Delete this trip?')"
+                        style="
+                        background: #ff4757;
+                        color: white;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        text-decoration: none;
+                        font-size: 13px;
+                        font-weight: bold;
+                        display: inline-block;
+                    ">Delete 🗑️</a>
+                </div>
             </div>
             {% endfor %}
         </div>

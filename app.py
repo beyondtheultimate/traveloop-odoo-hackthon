@@ -19,6 +19,18 @@ def init_db():
                  start_date TEXT,
                  end_date TEXT,
                  description TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS itinerary
+                (id INTEGER PRIMARY KEY,
+                 trip_id INTEGER,
+                 city TEXT,
+                 activity TEXT,
+                 day TEXT,
+                 cost REAL)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS packing
+                (id INTEGER PRIMARY KEY,
+                 trip_id INTEGER,
+                 item TEXT,
+                 packed INTEGER DEFAULT 0)''')
     conn.commit()
     conn.close()
 
@@ -96,7 +108,73 @@ def create_trip():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+@app.route('/trip/<int:trip_id>')
+def trip_detail(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM trips WHERE id=?", (trip_id,))
+    trip = c.fetchone()
+    c.execute("SELECT * FROM itinerary WHERE trip_id=?", (trip_id,))
+    itinerary = c.fetchall()
+    c.execute("SELECT * FROM packing WHERE trip_id=?", (trip_id,))
+    packing = c.fetchall()
+    conn.close()
+    return render_template('trip_detail.html', trip=trip, itinerary=itinerary, packing=packing)
 
+@app.route('/add_itinerary/<int:trip_id>', methods=['POST'])
+def add_itinerary(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    city = request.form['city']
+    activity = request.form['activity']
+    day = request.form['day']
+    cost = request.form['cost']
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO itinerary (trip_id, city, activity, day, cost) VALUES (?, ?, ?, ?, ?)",
+             (trip_id, city, activity, day, cost))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('trip_detail', trip_id=trip_id))
+
+@app.route('/add_packing/<int:trip_id>', methods=['POST'])
+def add_packing(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    item = request.form['item']
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO packing (trip_id, item) VALUES (?, ?)", (trip_id, item))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('trip_detail', trip_id=trip_id))
+
+@app.route('/toggle_packing/<int:item_id>/<int:trip_id>')
+def toggle_packing(item_id, trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("SELECT packed FROM packing WHERE id=?", (item_id,))
+    current = c.fetchone()[0]
+    c.execute("UPDATE packing SET packed=? WHERE id=?", (1 - current, item_id))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('trip_detail', trip_id=trip_id))
+@app.route('/delete_trip/<int:trip_id>')
+def delete_trip(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM trips WHERE id=? AND user_id=?", (trip_id, session['user_id']))
+    c.execute("DELETE FROM itinerary WHERE trip_id=?", (trip_id,))
+    c.execute("DELETE FROM packing WHERE trip_id=?", (trip_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('dashboard'))
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
