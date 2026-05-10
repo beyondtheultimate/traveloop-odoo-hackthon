@@ -1,22 +1,27 @@
 # ✈️ Traveloop - Personalized Travel Planning Made Easy
 
-A web application built for the **Odoo Hackathon** at Parul University that helps users plan multi-city trips, manage budgets, and stay organized!
+> Built for **Odoo Hackathon - Parul University 2026**
+
+A complete travel planning web application that helps users plan multi-city trips, manage budgets, track expenses and stay organized!
 
 ---
 
 ## 🚀 Features
 
-- 🔐 **Login & Signup** - Secure user authentication with validation
-- 🏠 **Dashboard** - View upcoming trips and popular destinations
+- 🔐 **Login & Signup** - Secure authentication with validation and forgot password
+- 🏠 **Dashboard** - Beautiful home page with banner, regional selections and trip search
 - 🗺️ **Create Trip** - Plan new trips with dates and description
+- 🧳 **My Trips** - View, manage and delete all your trips
 - 🗓️ **Itinerary Builder** - Add cities and activities day by day
 - 💰 **Budget Tracker** - Track expenses with visual pie chart
-- 🧳 **Packing Checklist** - Never forget anything again
-- 📝 **Trip Notes** - Add reminders and important info
-- 👤 **User Profile** - Edit your personal details
-- 🌍 **City Search** - Explore and discover destinations
-- 🔗 **Share Itinerary** - Share your trip plan with friends via link, WhatsApp or Twitter
-- 🗑️ **Delete Trips** - Manage your trips easily
+- 🧳 **Packing Checklist** - Categories, progress bar and reset button
+- 📝 **Trip Notes** - Add reminders and important info per trip
+- 👤 **User Profile** - Edit name, email, language and saved destinations
+- 🌍 **City Search** - Explore and discover destinations with filters
+- 🎯 **Activity Search** - Find things to do with category filters
+- 🔗 **Share Itinerary** - Share trip via public link, WhatsApp or Twitter
+- 🧾 **Invoice & Billing** - Generate expense invoice with PDF export
+- 📊 **Budget Insights** - Total spent, remaining budget tracker
 
 ---
 
@@ -27,7 +32,7 @@ A web application built for the **Odoo Hackathon** at Parul University that help
 | Python + Flask | Backend & Routing |
 | SQLite | Database |
 | HTML + CSS | Frontend |
-| JavaScript | Validation & Charts |
+| JavaScript | Validation & Interactivity |
 | Chart.js | Pie Chart Visualization |
 
 ---
