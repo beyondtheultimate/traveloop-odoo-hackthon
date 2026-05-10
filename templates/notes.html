@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop - Trip Notes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 10px; }
+        .hero p { opacity: 0.9; }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0ff;
+            padding-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+            height: 120px;
+            resize: none;
+        }
+        textarea:focus { border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { opacity: 0.9; }
+        .note-item {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .note-text { color: #333; font-size: 14px; flex: 1; line-height: 1.5; }
+        .delete-btn {
+            color: #ff4757;
+            text-decoration: none;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #aaa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">✈️ Traveloop</div>
+        <a href="/trip/{{ trip[0] }}">← Back to Trip</a>
+    </div>
+    <div class="hero">
+        <h1>📝 Trip Notes</h1>
+        <p>{{ trip[2] }}</p>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h3>✏️ Add a Note</h3>
+            <form method="POST">
+                <textarea name="note" placeholder="Write your note here... hotel check-in info, local contacts, reminders!" required></textarea>
+                <button type="submit">+ Save Note</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>📋 My Notes</h3>
+            {% if notes %}
+                {% for note in notes %}
+                <div class="note-item">
+                    <div class="note-text">{{ note[2] }}</div>
+                    <a href="/delete_note/{{ note[0] }}/{{ trip[0] }}" class="delete-btn">🗑️</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">No notes yet! Add your first note above.</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

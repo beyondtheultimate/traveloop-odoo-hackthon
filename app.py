@@ -31,6 +31,10 @@ def init_db():
                  trip_id INTEGER,
                  item TEXT,
                  packed INTEGER DEFAULT 0)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS notes
+                (id INTEGER PRIMARY KEY,
+                 trip_id INTEGER,
+                 note TEXT)''')
     conn.commit()
     conn.close()
 
@@ -175,6 +179,33 @@ def delete_trip(trip_id):
     conn.commit()
     conn.close()
     return redirect(url_for('dashboard'))
+@app.route('/notes/<int:trip_id>', methods=['GET', 'POST'])
+def notes(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    if request.method == 'POST':
+        note = request.form['note']
+        c.execute("INSERT INTO notes (trip_id, note) VALUES (?, ?)", (trip_id, note))
+        conn.commit()
+    c.execute("SELECT * FROM notes WHERE trip_id=? ORDER BY id DESC", (trip_id,))
+    notes = c.fetchall()
+    c.execute("SELECT * FROM trips WHERE id=?", (trip_id,))
+    trip = c.fetchone()
+    conn.close()
+    return render_template('notes.html', notes=notes, trip=trip)
+
+@app.route('/delete_note/<int:note_id>/<int:trip_id>')
+def delete_note(note_id, trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM notes WHERE id=?", (note_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('notes', trip_id=trip_id))
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
