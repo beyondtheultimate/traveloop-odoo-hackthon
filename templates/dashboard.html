@@ -20,37 +20,101 @@
             color: white;
         }
         .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar-links { display: flex; gap: 10px; }
         .navbar a {
             color: white;
             text-decoration: none;
             background: rgba(255,255,255,0.2);
             padding: 8px 15px;
             border-radius: 20px;
+            font-size: 13px;
         }
-        .hero {
+        .banner {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 40px 30px;
+            padding: 60px 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .hero h1 { font-size: 28px; margin-bottom: 10px; }
-        .hero p { opacity: 0.9; margin-bottom: 20px; }
-        .btn-new {
+        .banner::before {
+            content: '✈️ 🌍 🗺️ 🏝️ 🗼 🏯 🗽';
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.1;
+            top: -20px;
+            left: 0;
+            right: 0;
+        }
+        .banner h1 { font-size: 36px; margin-bottom: 10px; }
+        .banner p { opacity: 0.9; font-size: 16px; margin-bottom: 25px; }
+        .plan-btn {
             background: white;
             color: #667eea;
-            padding: 12px 30px;
+            padding: 14px 35px;
             border-radius: 25px;
             text-decoration: none;
             font-weight: bold;
             font-size: 16px;
+            display: inline-block;
         }
-        .container { padding: 30px; max-width: 1000px; margin: 0 auto; }
-        .section-title {
-            font-size: 22px;
+        .search-section {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .search-section input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-section input:focus { border-color: #667eea; }
+        .search-btn {
+            padding: 10px 20px;
+            background: #f0f0ff;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-weight: bold;
-            color: #333;
+            font-size: 13px;
+        }
+        .container { padding: 30px; max-width: 1100px; margin: 0 auto; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .regional-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+        .regional-card {
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .regional-card:hover { transform: translateY(-5px); }
+        .regional-card .emoji { font-size: 30px; margin-bottom: 8px; }
+        .regional-card .name { font-size: 13px; font-weight: bold; }
+        .regional-card .country { font-size: 11px; opacity: 0.9; }
         .trips-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -61,7 +125,9 @@
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
         }
+        .trip-card:hover { transform: translateY(-3px); }
         .trip-card h3 { color: #333; margin-bottom: 8px; font-size: 18px; }
         .trip-card .dates { color: #888; font-size: 13px; margin-bottom: 10px; }
         .trip-card .desc { color: #555; font-size: 14px; margin-bottom: 15px; }
@@ -69,6 +135,7 @@
             text-align: center;
             padding: 60px;
             color: #888;
+            grid-column: span 3;
         }
         .empty h3 { font-size: 20px; margin-bottom: 10px; }
     </style>
@@ -76,40 +143,65 @@
 <body>
     <div class="navbar">
         <div class="logo">✈️ Traveloop</div>
-        <a href="/city_search" style="margin-right: 10px;">🌍 Cities</a>
-<a href="/profile" style="margin-right: 10px;">👤 Profile</a>
-<a href="/logout">Logout</a>
+        <div class="navbar-links">
+            <a href="/city_search">🌍 Cities</a>
+            <a href="/profile">👤 Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
     </div>
-    <div class="hero">
+
+    <!-- Banner -->
+    <div class="banner">
         <h1>Welcome back, {{ name }}! 🌍</h1>
-        <p>Ready to plan your next adventure?</p>
-        <a href="/create_trip" class="btn-new">+ Plan New Trip</a>
+        <p>Where will your next adventure take you?</p>
+        <a href="/create_trip" class="plan-btn">+ Plan a Trip</a>
     </div>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <input type="text" placeholder="Search trips, destinations...">
+        <button class="search-btn">Group by</button>
+        <button class="search-btn">Filter</button>
+        <button class="search-btn">Sort by</button>
+    </div>
+
     <div class="container">
-        <div class="section-title">🌍 Popular Destinations</div>
-        <div class="trips-grid" style="margin-bottom: 30px;">
-            <div class="trip-card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                <h3 style="color: white;">🗼 Paris, France</h3>
-                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">City of Love & Lights</div>
-                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹80,000</div>
+        <!-- Top Regional Selections -->
+        <div class="section-header">
+            <div class="section-title">🌏 Top Regional Selections</div>
+        </div>
+        <div class="regional-grid">
+            <div class="regional-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="emoji">🗼</div>
+                <div class="name">Paris</div>
+                <div class="country">France</div>
             </div>
-            <div class="trip-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;">
-                <h3 style="color: white;">🗽 New York, USA</h3>
-                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">The City That Never Sleeps</div>
-                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹1,20,000</div>
+            <div class="regional-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <div class="emoji">🏯</div>
+                <div class="name">Tokyo</div>
+                <div class="country">Japan</div>
             </div>
-            <div class="trip-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white;">
-                <h3 style="color: white;">🏯 Tokyo, Japan</h3>
-                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">Modern Meets Traditional</div>
-                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹95,000</div>
+            <div class="regional-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <div class="emoji">🏝️</div>
+                <div class="name">Bali</div>
+                <div class="country">Indonesia</div>
             </div>
-            <div class="trip-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white;">
-                <h3 style="color: white;">🏝️ Bali, Indonesia</h3>
-                <div style="opacity: 0.9; font-size: 13px; margin-bottom: 10px;">Island of Gods</div>
-                <div style="opacity: 0.8; font-size: 12px;">✈️ Popular • 💰 ~₹45,000</div>
+            <div class="regional-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                <div class="emoji">🏖️</div>
+                <div class="name">Goa</div>
+                <div class="country">India</div>
+            </div>
+            <div class="regional-card" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                <div class="emoji">🗽</div>
+                <div class="name">New York</div>
+                <div class="country">USA</div>
             </div>
         </div>
-        <div class="section-title">My Trips</div>
+
+        <!-- Previous Trips -->
+        <div class="section-header">
+            <div class="section-title">🧳 Previous Trips</div>
+        </div>
         {% if trips %}
         <div class="trips-grid">
             {% for trip in trips %}
@@ -128,7 +220,7 @@
                         font-weight: bold;
                         display: inline-block;
                     ">View →</a>
-                    <a href="/delete_trip/{{ trip[0] }}" 
+                    <a href="/delete_trip/{{ trip[0] }}"
                         onclick="return confirm('Delete this trip?')"
                         style="
                         background: #ff4757;
@@ -147,7 +239,7 @@
         {% else %}
         <div class="empty">
             <h3>No trips yet! 🌏</h3>
-            <p>Click "Plan New Trip" to start your adventure!</p>
+            <p>Click "Plan a Trip" to start your adventure!</p>
         </div>
         {% endif %}
     </div>

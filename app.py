@@ -274,7 +274,31 @@ def reset_packing(trip_id):
     conn.commit()
     conn.close()
     return redirect(url_for('trip_detail', trip_id=trip_id)) 
- 
+@app.route('/invoice/<int:trip_id>')
+def invoice(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM trips WHERE id=?", (trip_id,))
+    trip = c.fetchone()
+    c.execute("SELECT * FROM itinerary WHERE trip_id=?", (trip_id,))
+    itinerary = c.fetchall()
+    c.execute("SELECT * FROM users WHERE id=?", (session['user_id'],))
+    user = c.fetchone()
+    conn.close()
+    subtotal = sum(item[5] for item in itinerary)
+    tax = round(subtotal * 0.05, 2)
+    discount = 50
+    grand_total = subtotal + tax - discount
+    return render_template('invoice.html', 
+                         trip=trip, 
+                         itinerary=itinerary,
+                         user=user,
+                         subtotal=subtotal,
+                         tax=tax,
+                         discount=discount,
+                         grand_total=grand_total) 
         
 if __name__ == '__main__':
     init_db()
