@@ -252,6 +252,16 @@ def city_search():
     if query:
         cities = [c for c in cities if query in c['name'].lower() or query in c['country'].lower()]
     return render_template('city_search.html', cities=cities, query=query)
+@app.route('/share/<int:trip_id>')
+def share_trip(trip_id):
+    conn = sqlite3.connect('traveloop.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM trips WHERE id=?", (trip_id,))
+    trip = c.fetchone()
+    c.execute("SELECT * FROM itinerary WHERE trip_id=?", (trip_id,))
+    itinerary = c.fetchall()
+    conn.close()
+    return render_template('share.html', trip=trip, itinerary=itinerary)
  
  
         

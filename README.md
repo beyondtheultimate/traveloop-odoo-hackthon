@@ -15,6 +15,7 @@ A web application built for the **Odoo Hackathon** at Parul University that help
 - 📝 **Trip Notes** - Add reminders and important info
 - 👤 **User Profile** - Edit your personal details
 - 🌍 **City Search** - Explore and discover destinations
+- 🔗 **Share Itinerary** - Share your trip plan with friends via link, WhatsApp or Twitter
 - 🗑️ **Delete Trips** - Manage your trips easily
 
 ---

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop - Shared Trip</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo { font-size: 24px; font-weight: bold; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 10px; }
+        .hero p { opacity: 0.9; margin-bottom: 20px; }
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .container { padding: 30px; max-width: 800px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0ff;
+            padding-bottom: 10px;
+        }
+        .item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item .info { flex: 1; }
+        .item .city { font-weight: bold; color: #333; font-size: 14px; }
+        .item .details { color: #888; font-size: 12px; margin-top: 3px; }
+        .cost { color: #667eea; font-weight: bold; font-size: 13px; }
+        .share-box {
+            background: #f0f0ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .share-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: #667eea;
+            outline: none;
+        }
+        .copy-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .social {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            color: white;
+        }
+        .whatsapp { background: #25D366; }
+        .twitter { background: #1DA1F2; }
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 13px;
+        }
+        .budget-total {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            color: white;
+        }
+        .budget-total .amount { font-size: 28px; font-weight: bold; }
+        .budget-total .label { opacity: 0.9; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">✈️ Traveloop</div>
+        <a href="/dashboard">← Dashboard</a>
+    </div>
+    <div class="hero">
+        <h1>{{ trip[2] }} 🗺️</h1>
+        <p>📅 {{ trip[3] }} → {{ trip[4] }}</p>
+        <span class="badge">🔗 Shared Itinerary • Read Only</span>
+    </div>
+    <div class="container">
+        <!-- Share Link -->
+        <div class="card">
+            <h3>🔗 Share This Trip</h3>
+            <div class="share-box">
+                <input type="text" id="shareLink" value="http://127.0.0.1:5000/share/{{ trip[0] }}" readonly>
+                <button class="copy-btn" onclick="copyLink()">📋 Copy</button>
+            </div>
+            <div class="social">
+                <button class="social-btn whatsapp" onclick="shareWhatsapp()">📱 WhatsApp</button>
+                <button class="social-btn twitter" onclick="shareTwitter()">🐦 Twitter</button>
+            </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="card">
+            <h3>💰 Trip Budget</h3>
+            <div class="budget-total">
+                <div class="amount">₹{{ itinerary|sum(attribute=5)|round(2) }}</div>
+                <div class="label">Total Estimated Cost</div>
+            </div>
+        </div>
+
+        <!-- Itinerary -->
+        <div class="card">
+            <h3>🗓️ Trip Itinerary</h3>
+            {% if itinerary %}
+                {% for item in itinerary %}
+                <div class="item">
+                    <div class="info">
+                        <div class="city">🏙️ {{ item[2] }}</div>
+                        <div class="details">📌 {{ item[3] }} | 📅 {{ item[4] }}</div>
+                    </div>
+                    <div class="cost">₹{{ item[5] }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">No itinerary added yet!</div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        function copyLink() {
+            const link = document.getElementById('shareLink');
+            link.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        }
+        function shareWhatsapp() {
+            const link = document.getElementById('shareLink').value;
+            window.open('https://wa.me/?text=Check out my trip plan: ' + link);
+        }
+        function shareTwitter() {
+            const link = document.getElementById('shareLink').value;
+            window.open('https://twitter.com/intent/tweet?text=Check out my trip plan on Traveloop!&url=' + link);
+        }
+    </script>
+</body>
+</html>
